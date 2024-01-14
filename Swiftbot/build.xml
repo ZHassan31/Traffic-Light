@@ -1,0 +1,33 @@
+
+<project default="piremote" name="Build DMSBW">
+	<property name="mainclass" value="Swiftbot" />
+	<property name="raspberrypi" value="${ip_from_user}" />
+	<property name="user_password" value="${password_from_user}" />
+	<!--  Setup build properties  -->
+	<property name="raspberryfolder" value="~/Documents" />
+	<property name="username" value="pi" />
+	<property name="password" value="${user_password}" />
+	<property name="dir.buildfile" value="." />
+	<property name="dir.workspace" value="${basedir}" />
+	<property name="dir.jarfile" value="${basedir}" />
+	<property name="jar_name" value="lib/SwiftBotAPI-5.1.0.jar" />
+	<property name="student_jar" value="Test.jar" />
+	<echo>${basedir}</echo>
+	<echo>${dir.buildfile}</echo>
+	<!--  Make the .jar  -->
+	<target name="piremote">
+		<jar destfile="${student_jar}" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="${mainclass}" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${basedir}/bin" />
+			<zipfileset excludes="META-INF/*.SF" src="${basedir}/${jar_name}" />
+		</jar>
+		<basename file="${student_jar}" property="jar.filename" />
+		<echo>"Found application ${jar.filename}"</echo>
+		<!--  Copy the .jar over to the Swift Bot  -->
+		<echo>"Copying application to ${raspberrypi}:${raspberryfolder}/${jar.filename}"</echo>
+		<scp localfile="${jar.filename}" todir="${username}:${password}@${raspberrypi}:${raspberryfolder}" trust="true" />
+	</target>
+</project>
